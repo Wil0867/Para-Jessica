@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Feliz Cumpleaños 29! 🎉</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            height: 80vh;
+            max-height: 700px;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .start-screen.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+        }
+
+        .start-title {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .start-subtitle {
+            font-size: 1.3em;
+            color: #764ba2;
+            margin-bottom: 40px;
+            text-align: center;
+            font-style: italic;
+            padding: 0 20px;
+        }
+
+        .start-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .start-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        .start-button:active {
+            transform: translateY(-2px);
+        }
+
+        .photo-stack {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .photo-card {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transform-origin: center center;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0;
+        }
+
+        .photo-card.falling {
+            animation: fallAndRotate 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        @keyframes fallAndRotate {
+            0% {
+                transform: translate(-50%, -150%) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(var(--rotation)) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .photo-card.exit {
+            animation: exitCard 0.6s ease-out forwards;
+        }
+
+        @keyframes exitCard {
+            0% {
+                transform: translate(-50%, -50%) rotate(var(--rotation)) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, 100vh) rotate(calc(var(--rotation) + 20deg)) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        .image-container {
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            border-radius: 20px 20px 0 0;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .caption-container {
+            padding: 25px;
+            text-align: center;
+            background: white;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .memory-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .caption-text {
+            font-size: 1.2em;
+            color: #333;
+            line-height: 1.6;
+            font-style: italic;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-indicator {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 30px;
+            border-radius: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #667eea;
+            z-index: 100;
+            display: none;
+        }
+
+        .progress-indicator.visible {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .start-title {
+                font-size: 2em;
+            }
+            
+            .start-subtitle {
+                font-size: 1.1em;
+            }
+            
+            .start-button {
+                padding: 15px 40px;
+                font-size: 1.2em;
+            }
+
+            .container {
+                height: 70vh;
+            }
+
+            .image-container {
+                height: 250px;
+            }
+
+            .caption-text {
+                font-size: 1em;
+                min-height: 50px;
+            }
+
+            .caption-container {
+                padding: 20px;
+            }
+
+            .photo-card {
+                width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .image-container {
+                height: 200px;
+            }
+
+            .caption-text {
+                font-size: 0.95em;
+            }
+
+            .start-title {
+                font-size: 1.7em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-indicator" id="progress">
+        <span id="currentNum">1</span> / <span id="totalNum">42</span>
+    </div>
+
+    <div class="container">
+        <div class="start-screen" id="startScreen">
+            <div class="start-title">🎂 ¡29 Años! 30 ya🎂</div>
+            <div class="start-subtitle">Recuerditos, con lo que había</div>
+            <button class="start-button" id="startBtn">✨ Empezar ✨</button>
+        </div>
+
+        <div class="photo-stack" id="photoStack">
+            <!-- Las fotos se generarán aquí -->
+        </div>
+    </div>
+
+    <script>
+        // EDITA AQUÍ TUS IMÁGENES Y LEYENDAS
+        const memories = [
+            { image: 'images/Jessica/IMG-20251018-WA0026.jpg', caption: 'Empezamos con esta foto que es la mas decente (mentiris), pero por aqui arranca :)' },
+            { image: 'images/Jessica/IMG-20251018-WA0005.jpg', caption: 'Pues que le digo hace 21 años que son los que yo tengo que me lleva aguantando' },
+            { image: 'images/Jessica/IMG-20251018-WA0013.jpg', caption: 'Quiero agradecer a diosito por permitirme nacer en su nucleo familiar asi a lo malditasea (casi no nazco)' },
+            { image: 'images/Jessica/IMG-20251018-WA0047.jpg', caption: 'Aunque no lo crea y no lo parezca si la quiero, a veces lejos, pero si ¡La quiero!' },
+            { image: 'images/Jessica/IMG-20251018-WA0007.jpg', caption: 'Ya tocaba foto con la cuchita, pero ole tambien agradezco por escucharme esas veces que me daba la maricada jksdjks' },
+            { image: 'images/Jessica/IMG-20251018-WA0075.jpg', caption: 'Tambien gracias por aguantar mis malas caras (como en esta foto jaja)' },
+            { image: 'images/Jessica/IMG-20251018-WA0080.jpg', caption: 'Gracias por soportar mi actitud' },
+            { image: 'images/Jessica/IMG-20251018-WA0058.jpg', caption: 'Gracias por siempre regañarme, aunque a veces se pasa, pero me lo aguanto' },
+            { image: 'images/Jessica/IMG-20251018-WA0078.jpg', caption: 'Gracias por ser uno de los pilares por los cuales sigo apuntando alto' },
+            { image: 'images/Jessica/IMG-20251018-WA0076.jpg', caption: 'Gracias por siempre estar ahí, mirandome feo cuando puede jaja' },
+            { image: 'images/Jessica/IMG-20251018-WA0079.jpg', caption: '¿Ya dije gracias por existir?' },
+            { image: 'images/Jessica/IMG-20251018-WA0082.jpg', caption: 'Miree fotos que me encontré por ahí' },
+            { image: 'images/Jessica/IMG-20251018-WA0013.jpg', caption: '¿Se acuerda de los sustos que pasamos por el viejito?' },
+            { image: 'images/Jessica/IMG-20251018-WA0070.jpg', caption: '¿Se acuerda de la empoderada?' },
+            { image: 'images/Jessica/IMG-20251018-WA0071.jpg', caption: 'Vea eso, como yo estuve en su grado usted TIENE que estar en el mio, pero contento ese dia, felicidades' },
+            { image: 'images/Jessica/IMG-20251018-WA0057.jpg', caption: 'No hay foto de la trasquilada, pero ahi uste se las dio de peluquera' },
+            { image: 'images/Jessica/IMG-20251018-WA0056.jpg', caption: 'Veaaa otra foto de su gradoooo, ese dia sude por los ojos, no sabía que uno sudaba por ahí' },
+            { image: 'images/Jessica/IMG-20251018-WA0055.jpg', caption: 'A saber de cuando sea esa foto, pero estaba joven y no con casi 30' },
+            { image: 'images/Jessica/IMG-20251018-WA0054.jpg', caption: 'Otra igual a saber, en ese tiempo me caia mal, porque me miraba hasta los cuadernos' },
+            { image: 'images/Jessica/IMG-20251018-WA0053.jpg', caption: 'A saber de donde salio esta foto, pero mire fea no era, que bendición' },
+            { image: 'images/Jessica/IMG-20251018-WA0052.jpg', caption: 'Aquí presumiendole cuando no tenia casi 30 JAJAJAJ' },
+            { image: 'images/Jessica/IMG-20251018-WA0040.jpg', caption: 'Aqui si no estoy mal ya venian sus criaturas, bendito el dia en que no se comia pasta en esa casa' },
+            { image: 'images/Jessica/IMG-20251018-WA0029.jpg', caption: 'Aca estaba con el cacaaas, momentos humildes JAJAJA' },
+            { image: 'images/Jessica/IMG-20251018-WA0024.jpg', caption: 'Vea un collageee, que bonito, como pasa el timepo ¿no?' },
+            { image: 'images/Jessica/IMG-20251018-WA0021.jpg', caption: 'Me encontré a su mejor versión *Guiño, Guiño*' },
+            { image: 'images/Jessica/IMG-20251018-WA0020.jpg', caption: 'Veaaa, cuando no era amargada o bueno no tanto' },
+            { image: 'images/Jessica/IMG-20251018-WA0019.jpg', caption: 'Si no estoy mal fue para navidad, mi cara describe ese dia' },
+            { image: 'images/Jessica/IMG-20251018-WA0017.jpg', caption: 'Como olvidar una de las ultimas fotos antes de que le robaran el iPhone' },
+            { image: 'images/Jessica/IMG-20251018-WA0014.jpg', caption: 'Cuando agarraba mi cel para las fotos, que berraca ola' },
+            { image: 'images/Jessica/IMG-20251018-WA0011.jpg', caption: 'Aquí cuando era color de "rosa"' },
+            { image: 'images/Jessica/IMG-20251018-WA0010.jpg', caption: 'Vea esa otra, cuando lo obligaban a uno a tomarse fotos' },
+            { image: 'images/Jessica/IMG-20251018-WA0085.jpg', caption: 'Faltaba una con las criaturas (la cara lo dice todo)' },
+            { image: 'images/Jessica/IMG-20250203-WA0038.jpg', caption: '¡Feliz cumpleaños! (No sabía que alguien podia sudar por los ojos)' }
+        ];
+
+        let currentIndex = 0;
+        let isAnimating = false;
+
+        const startScreen = document.getElementById('startScreen');
+        const startBtn = document.getElementById('startBtn');
+        const photoStack = document.getElementById('photoStack');
+        const progress = document.getElementById('progress');
+        const currentNum = document.getElementById('currentNum');
+        const totalNum = document.getElementById('totalNum');
+
+        totalNum.textContent = memories.length;
+
+        function createPhotoCard(memory, index) {
+            const card = document.createElement('div');
+            card.className = 'photo-card';
+            
+            const rotation = (Math.random() - 0.5) * 15;
+            card.style.setProperty('--rotation', `${rotation}deg`);
+            
+            card.innerHTML = `
+                <div class="image-container">
+                    <img src="${memory.image}" alt="Recuerdo ${index + 1}" class="photo-image">
+                </div>
+                <div class="caption-container">
+                    <div class="memory-number">Recuerdo #${index + 1}</div>
+                    <div class="caption-text">${memory.caption}</div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function showNextPhoto() {
+            if (isAnimating || currentIndex >= memories.length) {
+                return;
+            }
+
+            isAnimating = true;
+
+            const card = createPhotoCard(memories[currentIndex], currentIndex);
+            photoStack.appendChild(card);
+
+            setTimeout(() => {
+                card.classList.add('falling');
+            }, 50);
+
+            currentNum.textContent = currentIndex + 1;
+
+            setTimeout(() => {
+                isAnimating = false;
+                currentIndex++;
+                
+                if (currentIndex < memories.length) {
+                    setTimeout(showNextPhoto, 3500);
+                }
+                
+                if (photoStack.children.length > 8) {
+                    const oldCard = photoStack.children[0];
+                    oldCard.classList.add('exit');
+                    setTimeout(() => {
+                        photoStack.removeChild(oldCard);
+                    }, 600);
+                }
+            }, 800);
+        }
+
+        startBtn.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            progress.classList.add('visible');
+            
+            setTimeout(() => {
+                showNextPhoto();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
